@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <title>Auth Form</title>
+  </head>
+
+  <body>
+    <header>
+        <h1> Word Game </h1>
+        <button id="start">Start</button>
+    </header>
+
+    <div class="word">
+      <div class="card" id="wordInput">
+        <p>- - - - - - </p>
+      </div>
+
+      <div class="card" id="results">
+        <h2>Results</h2>
+        <p><strong>Wins:</strong> <span id="user-wins"></span></p>
+        <p><strong>Losses:</strong> <span id="user-losses"></span></p>
+        <button id="reset">Reset Scores</button>
+        <div>
+            <h3><span id="timer"></span> seconds remaining</h3>
+        </div>
+      </div>
+    </div>
+    
+    <script src="./assets/js/script.js"></script>
+  </body>
+</html>
