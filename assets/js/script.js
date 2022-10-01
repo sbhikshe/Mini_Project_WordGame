@@ -7,8 +7,11 @@ var timerEl = document.getElementById("timer");
 var wordEl = document.getElementById("word")
 
 /* array of words */
-var wordList = ['HANGMAN', "GUESS AGAIN"];
+var wordList = ['hangman', "guess again"];
 var wordIndex;
+var word; /* the word the game selected */
+var partialWord = [];
+var wordFound = false;
 
 /* results */
 renderWinsAndLosses()
@@ -22,40 +25,78 @@ function startGame() {
     selectAndRenderWord()
     var wins = JSON.parse(localStorage.getItem('wins'));
     var losses = JSON.parse(localStorage.getItem('losses'));
-    /* letters keydown listener */
 
-    /* pick word */
-
-
-    var gameTimer = 3;
+    var gameTimer = 60;
     var timerId = setInterval( function() {
         gameTimer--;
         timerEl.textContent = gameTimer;
 
-        if (gameTimer === 0) {
+        if (gameTimer === 0){
             clearInterval(timerId);
             losses++;
             localStorage.setItem('losses', losses);
             lossesEl.textContent = losses;
+        } else if (wordFound === true){
+            clearInterval(timerId);
+            /*
+            wins++;
+            localStorage.setItem('losses', losses);
+            lossesEl.textContent = losses;
+            */
         }
     }, 1000);
 
-    document.addEventListener("keydown", checkInputLetter);
+    document.addEventListener("keydown", function(event) {
+           /* check the letter */
+        var wins = JSON.parse(localStorage.getItem('wins'));
+        var losses = JSON.parse(localStorage.getItem('losses'));
+
+        console.log("key down: " + event.key);
+
+        var key = event.key.toLowerCase();
+        var wordArray =  word.split("");
+        console.log("wordArray: " + wordArray);
+
+        if (wordArray.includes(key)) {
+            console.log(key + "is in " + word);
+            for (var i = 0; i < wordArray.length; i++) {
+                /* fill the partial word */
+                if(wordArray[i] === key) {
+                    partialWord[i] = key;
+                } 
+                console.log("partialWord: " + partialWord);
+                var partialWordStr = partialWord.join("");
+                wordEl.textContent = partialWordStr;
+            }
+            /* now check if the partialWord is complete */
+            if(word === partialWordStr)  {
+                console.log("word is filled");
+                /* the word is complete */
+                wordFound = true;
+                wins++;
+                localStorage.setItem('wins', wins);
+                winsEl.textContent = wins;
+                wordFound = true;
+            } else {
+                console.log("partialWord is not filled yet");
+            }
+        } else {
+            console.log(key + "is not in " + word);
+        }
+
+    });
 }
 
-function checkInputLetter(event) {
-    /* check the letter */
-    var wins = JSON.parse(localStorage.getItem('wins'));
-    var losses = JSON.parse(localStorage.getItem('losses'));
-    wins++;
-    localStorage.setItem('wins', wins);
-    winsEl.textContent = wins;
-}
 
 function  selectAndRenderWord(){
-    var wordIndex = Math.floor(Math.random() * wordList.length);
-    var word = wordList[wordIndex]
-    wordEl.textContent = word;
+    wordIndex = Math.floor(Math.random() * wordList.length);
+    word = wordList[wordIndex]
+    // fill partialWord with ----
+    for (var i = 0; i < word.length; i++) {
+        partialWord[i] = '-';
+    }
+    wordEl.textContent = partialWord;
+
 }
 
 function resetScores() {
