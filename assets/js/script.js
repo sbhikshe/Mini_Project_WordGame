@@ -18,8 +18,10 @@ startButtonEl.addEventListener("click", startGame);
 /* reset button listener */
 resetButtonEl.addEventListener("click", resetScores);
 
-function startGame() {
-    selectAndRenderWord()
+function startGame(event) {
+    startButtonEl.disabled=true;
+    event.stopImmediatePropagation();
+    selectAndRenderWord();
     var wins = JSON.parse(localStorage.getItem('wins'));
     var losses = JSON.parse(localStorage.getItem('losses'));
     /* letters keydown listener */
@@ -27,7 +29,8 @@ function startGame() {
     /* pick word */
 
 
-    var gameTimer = 3;
+    var gameTimer = 10;
+    timerEl.textContent = gameTimer;
     var timerId = setInterval( function() {
         gameTimer--;
         timerEl.textContent = gameTimer;
@@ -37,25 +40,51 @@ function startGame() {
             losses++;
             localStorage.setItem('losses', losses);
             lossesEl.textContent = losses;
+            document.removeEventListener("keydown", checkInputLetter);
+            startButtonEl.disabled=false;
+            wordEl.innerHTML="";
+            wordEl.innerText = "YOU LOSE";
         }
     }, 1000);
+
+    function checkInputLetter(event) {
+        /* check the letter */
+        var letters = wordEl.children;
+        for (i=0; i < wordEl.children.length; i++) {
+            if (event.key == wordEl.children[i].getAttribute('data-letter').toLowerCase()) {
+                wordEl.children[i].textContent = event.key;
+                wordEl.children[i].setAttribute("data-included", true);
+            }
+        }
+        if (document.querySelectorAll('[data-included=true]').length == wordEl.children.length) {
+            wins += 1;
+            localStorage.setItem('wins', wins);
+            winsEl.textContent = wins;
+            clearInterval(timerId);
+            document.removeEventListener("keydown", checkInputLetter);
+            startButtonEl.disabled=false;
+            wordEl.innerHTML="";
+            wordEl.innerText = "YOU WIN";
+        }
+    }
 
     document.addEventListener("keydown", checkInputLetter);
 }
 
-function checkInputLetter(event) {
-    /* check the letter */
-    var wins = JSON.parse(localStorage.getItem('wins'));
-    var losses = JSON.parse(localStorage.getItem('losses'));
-    wins++;
-    localStorage.setItem('wins', wins);
-    winsEl.textContent = wins;
-}
+
 
 function  selectAndRenderWord(){
+    wordEl.innerHTML ='';
     var wordIndex = Math.floor(Math.random() * wordList.length);
     var word = wordList[wordIndex]
-    wordEl.textContent = word;
+    console.log(word);
+    for (let i = 0; i < word.length; i++) {
+        var letter = document.createElement("li");
+        letter.setAttribute("data-letter", word[i]);
+        letter.setAttribute("data-included", false);
+        letter.textContent = "_";
+        wordEl.appendChild(letter);
+      }
 }
 
 function resetScores() {

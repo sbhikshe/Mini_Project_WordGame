@@ -47,6 +47,14 @@ button {
   float: right;
 }
 
+ul{ 
+  list-style: none;
+  justify-content: space-around;
+  display:flex;
+  width: 100%;
+  padding-inline-start:0px;
+}
+
 
 .card {
   background-color: #fff;
